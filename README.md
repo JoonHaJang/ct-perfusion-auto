@@ -497,17 +497,42 @@ python ct_perfusion_viewer.py
 
 ---
 
-## 📄 라이선스
+## 👨‍⚕️ 저자 및 연락처
 
-MIT License - 자유롭게 사용, 수정, 배포 가능
+**개발자:**  
+- Hae-Kwan Park* (parkoct@catholic.ac.kr)
+- HyukJang1 (ceraf100@gmail.com)
+- JoonHaJang (cyber040946@gmail.com)
+
+*Corresponding author
 
 ---
 
-## 👨‍⚕️ 저자 및 연락처
+## 📖 Citation
 
-**개발자:** HyukJang1, JoonHaJang  
-**소속:** Korean tertiary center  
-**이메일:** parkoct@catholic.ac.kr
+If you use this code or reproduce the analysis, please cite:
+
+**Paper:**
+```
+Jang H, Jang J, Jang D-K, Sung J-H, Lee H-J, Park H-K. 
+Validation of a CTP-Derived Corrected CBV Index as a Surrogate of 
+DSA-Based ASITN/SIR Collateral in Anterior Circulation Ischemia. 
+2025. DOI: (TBD)
+```
+
+**Repository:**
+```
+Park HK & Jang H. CT Perfusion Auto-Analysis Pipeline (open-source). 
+https://github.com/JoonHaJang/ct-perfusion-auto
+```
+
+---
+
+## 📄 라이선스
+
+**MIT License** — 학술 및 임상 연구 목적으로 자유롭게 사용 가능합니다.
+
+상업적 사용을 원하시는 경우, 교신저자(parkoct@catholic.ac.kr)에게 문의해주세요.
 
 ## 🖥️ GUI Applications
 
