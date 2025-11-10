@@ -91,8 +91,9 @@ NeuroFlow_Mac_*.zip
 *.png
 *.jpg
 *.jpeg
-!docs/*.png
-!docs/*.jpg
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.jpeg
 
 # Temporary files
 *.log

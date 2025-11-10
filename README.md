@@ -71,12 +71,83 @@ python ct_perfusion_viewer_windows.py
 python ct_perfusion_viewer_mac.py
 ```
 
-#### **GUI 사용 방법**
-1. 📁 "Select Folder" 버튼 클릭 → DICOM 폴더 선택
-2. 🚀 "Start Analysis" 버튼 클릭 → 자동 분석 시작 (약 1-2분)
-3. 📊 분석 결과 테이블에서 지표 확인
-4. 🌐 "View Results" 버튼 클릭 → 웹 뷰어에서 Perfusion 맵 확인
-5. 📈 "View Graph" 버튼 클릭 → TAC 그래프 확인 (있는 경우)
+---
+
+## 🖥️ GUI 사용 방법
+
+### 1️⃣ 프로그램 실행
+
+![GUI 실행 화면](docs/images/gui_start.png)
+
+**주요 기능:**
+- 📁 **Select Folder**: DICOM 폴더 선택
+- 🚀 **Start Analysis**: 자동 분석 시작
+- 🌐 **View Results**: 웹 뷰어 열기
+- 📂 **Result Folder**: 결과 폴더 열기
+
+**상태 표시:**
+- ✅ Ready for Analysis: 분석 준비 완료
+- 📊 Analysis Results: 분석 결과 테이블 (비어있음)
+- 📝 Log: 실시간 진행 상황
+
+---
+
+### 2️⃣ 분석 완료 화면
+
+![분석 결과](docs/images/gui_results.png)
+
+**분석 결과 테이블:**
+
+| 지표 | 값 | 임상적 의미 |
+|------|------|-------------|
+| **Hypoperfusion Volume** | 315.2 ml | Tmax ≥ 6s 영역 |
+| **Infarct Core Volume** | 77.5 ml | 이미 손상된 조직 |
+| **Penumbra Volume** | 237.7 ml | 구제 가능한 조직 |
+| **Mismatch Ratio** | 4.07 | ✅ 혈전제거술 적응증 |
+| **Corrected CBV Index** | 0.870 | 양호한 측부순환 |
+| **Conventional CBV Index** | 0.579 | 전통적 CBV 지표 |
+
+**추가 기능:**
+- 📈 **View Graph**: TAC (Time-Attenuation Curve) 그래프 확인
+- 📝 **Log**: 분석 진행 과정 상세 로그
+
+---
+
+### 3️⃣ 인터랙티브 웹 뷰어
+
+![웹 뷰어](docs/images/web_viewer.png)
+
+**웹 뷰어 기능:**
+
+**왼쪽 패널 - 주요 지표:**
+- Hypoperfusion: 315.2 ml
+- Infarct Core: 77.5 ml
+- Penumbra: 237.7 ml
+- Mismatch Ratio: 4.07
+- Corrected CBV Index: 0.870
+
+**중앙 - Perfusion 맵:**
+- 🎨 컬러맵으로 시각화된 뇌 영상
+- 🖱️ 마우스 휠로 슬라이스 이동
+- 🔍 확대/축소 가능
+
+**오른쪽 패널 - 슬라이스 네비게이션:**
+- 📸 전체 슬라이스 썸네일
+- 🎯 현재 슬라이스 하이라이트
+- 빠른 슬라이스 선택
+
+**오버레이 토글:**
+- 🟢 Hypoperfusion (Tmax >6s)
+- 🔴 Core (손상된 조직)
+- 🟡 Penumbra (구제 가능 조직)
+
+**Perfusion 맵 종류:**
+- CBFD (Cerebral Blood Flow)
+- CBVD (Cerebral Blood Volume)
+- MTTD (Mean Transit Time)
+- TMAXD (Time to Maximum)
+- TTPM (Time to Peak)
+- PENUMBRA (반음영 영역)
 
 ### 3. 출력 결과
 
