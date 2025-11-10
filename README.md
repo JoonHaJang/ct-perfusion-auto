@@ -68,7 +68,7 @@ python ct_perfusion_viewer_windows.py
 #### **Mac 사용자**
 
 ```bash
-python ct_perfusion_viewer.py
+python ct_perfusion_viewer_mac.py
 ```
 
 #### **GUI 사용 방법**
@@ -97,7 +97,7 @@ python ct_perfusion_viewer.py
 ct-perfusion-auto/
 │
 ├── ct_perfusion_viewer_windows.py      ← Windows GUI 프로그램 ⭐
-├── ct_perfusion_viewer.py              ← Mac GUI 프로그램 ⭐
+├── ct_perfusion_viewer_mac.py          ← Mac GUI 프로그램 ⭐
 ├── requirements.txt                    ← Python 패키지 의존성
 │
 └── scripts/
@@ -526,7 +526,7 @@ python ct_perfusion_viewer_windows.py
 git clone https://github.com/JoonHaJang/ct-perfusion-auto.git
 cd ct-perfusion-auto
 pip install -r requirements.txt
-python ct_perfusion_viewer.py
+python ct_perfusion_viewer_mac.py
 ```
 
 ⚠️ **중요**: PC환경에 Python 3.8 이상이 설치되어 있어야 합니다
