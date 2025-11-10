@@ -10,10 +10,10 @@ import subprocess
 from pathlib import Path
 import webbrowser
 
-# Qt 플랫폼 플러그인 경로 설정 (macOS .app 번들용)
+# Qt 플랫폼 플러그인 경로 설정 (Windows PyInstaller용)
 if getattr(sys, 'frozen', False):
-    # py2app으로 빌드된 경우
-    bundle_dir = Path(sys.executable).parent.parent / 'Resources'
+    # PyInstaller로 빌드된 경우
+    bundle_dir = Path(sys.executable).parent
     platforms_dir = bundle_dir / 'platforms'
     if platforms_dir.exists():
         os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = str(platforms_dir)
@@ -50,15 +50,27 @@ class AnalysisWorker(QThread):
     
     def run(self):
         try:
-            # 스크립트 경로 (PyInstaller 호환)
+            # 스크립트 경로 및 Python 인터프리터 (PyInstaller 호환)
             if getattr(sys, 'frozen', False):
                 # PyInstaller로 패키징된 경우
                 application_path = Path(sys.executable).parent
+                # scripts 폴더 경로 확인 (여러 위치 시도)
+                script_dir = application_path / "scripts"
+                if not script_dir.exists():
+                    script_dir = application_path / "_internal" / "scripts"
+                if not script_dir.exists():
+                    raise Exception(f"Scripts folder not found. Checked: {application_path / 'scripts'} and {application_path / '_internal' / 'scripts'}")
+                
+                # Python 인터프리터 찾기 (시스템 Python 사용)
+                import shutil
+                python_exe = shutil.which("python") or shutil.which("python3")
+                if not python_exe:
+                    raise Exception("Python not found in system PATH. Please install Python 3.8 or higher.")
             else:
                 # 일반 Python 실행
                 application_path = Path(__file__).parent
-            
-            script_dir = application_path / "scripts"
+                script_dir = application_path / "scripts"
+                python_exe = sys.executable
             
             result = {
                 "patient_dir": str(self.patient_dir),
@@ -72,15 +84,15 @@ class AnalysisWorker(QThread):
             # Extract patient name
             patient_name = Path(self.patient_dir).name
             
+            # subprocess로 스크립트 실행 (시스템 Python 사용)
             cmd = [
-                sys.executable, str(script_dir / "extract_metrics_from_dicom.py"),
+                python_exe, str(script_dir / "extract_metrics_from_dicom.py"),
                 "--dicom_dir", str(self.patient_dir),
                 "--output_dir", str(self.output_dir),
                 "--patient_name", patient_name,
-                "--save_nifti"  # Save NIfTI for web viewer
+                "--save_nifti"
             ]
             
-            # PyInstaller: CREATE_NO_WINDOW flag to prevent console window
             startupinfo = None
             if sys.platform == 'win32':
                 startupinfo = subprocess.STARTUPINFO()
@@ -112,20 +124,20 @@ class AnalysisWorker(QThread):
             # 2.5. Extract TAC from Penumbra images
             self.progress.emit("📊 Extracting TAC from Penumbra images...")
             
-            # TAC 추출 스크립트 경로 확인
+            # TAC 추출 스크립트 (script_dir 사용)
             tac_script = script_dir / "extract_tac_from_penumbra.py"
             
             if tac_script.exists():
                 try:
                     tac_output_dir = Path(self.output_dir) / "tac_extracted"
                     cmd = [
-                        sys.executable, str(tac_script),
+                        python_exe, str(tac_script),
                         str(self.patient_dir),
                         str(tac_output_dir)
                         # --slice 파라미터 없음 = 자동으로 마지막 슬라이스 선택
                     ]
                     
-                    proc = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', startupinfo=startupinfo if sys.platform == 'win32' else None)
+                    proc = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', startupinfo=startupinfo)
                     
                     if proc.returncode == 0:
                         # Load TAC results (파일명 동적 검색)
@@ -151,18 +163,11 @@ class AnalysisWorker(QThread):
             viewer_dir = Path(self.output_dir) / "viewer"
             
             cmd = [
-                sys.executable, str(script_dir / "generate_dicom_viewer.py"),
+                python_exe, str(script_dir / "generate_dicom_viewer.py"),
                 "--dicom_dir", str(self.patient_dir),
                 "--metrics", str(metrics_json),
                 "--output_dir", str(viewer_dir)
             ]
-            
-            # PyInstaller: CREATE_NO_WINDOW flag to prevent console window
-            startupinfo = None
-            if sys.platform == 'win32':
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                startupinfo.wShowWindow = subprocess.SW_HIDE
             
             proc = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', startupinfo=startupinfo)
             if proc.returncode != 0:
@@ -207,7 +212,7 @@ class CTPerfusionViewer(QMainWindow):
         # Preferences
         self.zoom_level = 1.0
         self.font_size = 13
-        self.font_family = "SF Pro Display"
+        self.font_family = "Segoe UI"
         
         self.initUI()
     
@@ -605,7 +610,7 @@ class CTPerfusionViewer(QMainWindow):
         folder = QFileDialog.getExistingDirectory(
             self, 
             "Select Patient DICOM Folder",
-            r"C:\Users\Joon\Code\의료 저널\Research\CTP_MT"
+            str(Path.home() / "Desktop")
         )
         
         if folder:
@@ -731,7 +736,9 @@ class CTPerfusionViewer(QMainWindow):
             )
         
         # pvt_ml은 hypoperfusion_volume_ml과 중복이므로 제거
-        # PVT 데이터도 TAC로 대체되었으므로 표시하지 않음
+        
+        # TAC 데이터는 디지타이징 정확도 문제로 표시하지 않음
+        # 대신 View Graph 버튼으로 원본 Penumbra 이미지 확인 가능
         
         self.metrics_table.setRowCount(len(metrics_info))
         
@@ -975,7 +982,7 @@ class CTPerfusionViewer(QMainWindow):
         family_layout = QHBoxLayout()
         family_label = QLabel("Font:")
         family_combo = QComboBox()
-        family_combo.addItems(["SF Pro Display", "Segoe UI", "Arial", "Helvetica", "Malgun Gothic"])
+        family_combo.addItems(["Segoe UI", "Arial", "Malgun Gothic", "Microsoft YaHei", "Helvetica"])
         family_combo.setCurrentText(self.font_family)
         family_layout.addWidget(family_label)
         family_layout.addWidget(family_combo)

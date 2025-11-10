@@ -1,0 +1,86 @@
+NeuroFlow - CT Perfusion Analysis Suite
+Changelog
+
+========================================
+v1.0 (2024-11-10) - Initial Release
+========================================
+
+Features
+--------
+✅ Siemens CT Perfusion DICOM analysis
+✅ Automatic brain segmentation
+✅ Core/Penumbra volume calculation
+✅ Corrected CBV Index (validated in JNIS 2025)
+✅ Conventional CBV Index
+✅ Mismatch Ratio calculation
+✅ HIR (Hypoperfusion Intensity Ratio)
+✅ PRR (Penumbra Rescue Ratio)
+✅ TAC extraction from Penumbra images
+✅ Interactive 3D web viewer
+✅ Export to JSON and NIfTI formats
+
+Technical Details
+-----------------
+- RGB-to-Scalar conversion for Siemens maps
+- Automatic ROI detection
+- Processing time: <2 minutes per case
+- Output: Quantitative metrics + 3D visualization
+
+System Requirements
+-------------------
+- Windows 10/11 (64-bit)
+- Python 3.8 or higher (required)
+- 8GB RAM (16GB recommended)
+- 2GB disk space
+
+Known Issues
+------------
+⚠️ Python must be installed separately
+⚠️ Large datasets (>500 slices) may take longer
+⚠️ Requires "Add Python to PATH" during installation
+
+Clinical Validation
+--------------------
+- Corrected CBV Index: AUC 0.83 (N=123, JNIS 2025)
+- Tested on diverse stroke etiologies
+- Validated against DSA ASITN/SIR grading
+
+========================================
+Future Plans (v1.1+)
+========================================
+
+Planned Features
+----------------
+- Standalone version (no Python required)
+- Mac version
+- Multi-vendor support (GE, Philips)
+- Batch processing
+- Custom threshold settings
+- Export to PACS
+- Automated reporting
+
+Performance Improvements
+------------------------
+- Faster processing for large datasets
+- Reduced memory usage
+- Parallel processing support
+
+========================================
+Support & Contact
+========================================
+
+For bug reports, feature requests, or questions:
+Email: [Your Email]
+GitHub: [Repository URL] (if applicable)
+
+========================================
+License & Citation
+========================================
+
+This software is provided for research and clinical use.
+
+If you use NeuroFlow in your research, please cite:
+[Your JNIS 2025 paper]
+[Your SPE paper - when published]
+
+© 2024 NeuroFlow Development Team

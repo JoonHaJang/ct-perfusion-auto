@@ -76,8 +76,16 @@ debug_*.py
 compare_*.py
 
 # Build files
-*.spec
+# *.spec (macOS 빌드용 spec 파일은 포함)
 build_exe.spec
+build_new/
+dist_new/
+*.zip
+distribution/
+
+# Distribution files
+NeuroFlow_Windows_*.zip
+NeuroFlow_Mac_*.zip
 
 # Images (except documentation)
 *.png

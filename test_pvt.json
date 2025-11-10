@@ -1,0 +1,21 @@
+{
+  "pvt_status": "PVT-",
+  "pvt_positive": false,
+  "sss_tmax_mean": 3.1943226254467434,
+  "sss_tmax_max": 8.867097179421751,
+  "sss_positive": false,
+  "sss_positive_ratio": 0.0,
+  "torcula_tmax_mean": 2.529360705787198,
+  "torcula_tmax_max": 8.867097179421751,
+  "torcula_positive": false,
+  "torcula_positive_ratio": 0.0,
+  "threshold": 10.0,
+  "interpretation": "정상 정맥 유출 (Normal venous outflow)",
+  "clinical_significance": {
+    "risk_level": "LOW",
+    "prognosis": "양호한 예후 예상 (Favorable prognosis)",
+    "recommendation": "표준 치료 프로토콜 적용",
+    "evidence": "PVT- 환자는 excellent recovery 확률 39%"
+  },
+  "method": "Qualitative assessment (presence of Tmax ≥ 10s region)"
+}

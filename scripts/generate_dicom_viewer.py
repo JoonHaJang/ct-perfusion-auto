@@ -146,7 +146,7 @@ def apply_window_level(scalar_array, window, level):
     return display_array
 
 
-def create_overlay_mask(mask_array, color='green', alpha=0.8, rgb_color=None):
+def create_overlay_mask(mask_array, color='green', alpha=0.8, rgb_color=None, outline_only=False):
     """
     마스크를 컬러 오버레이로 변환 (윤곽선 포함)
     
@@ -155,6 +155,7 @@ def create_overlay_mask(mask_array, color='green', alpha=0.8, rgb_color=None):
         color: 기본 색상 이름 (rgb_color가 없을 때 사용)
         alpha: 투명도 (0-1)
         rgb_color: RGB 색상 [r, g, b] (0-255), 지정하면 color 무시
+        outline_only: True면 윤곽선만 표시 (채우기 없음)
     """
     from scipy import ndimage
     
@@ -171,31 +172,35 @@ def create_overlay_mask(mask_array, color='green', alpha=0.8, rgb_color=None):
     if rgb_color is not None:
         r, g, b = rgb_color
         fill_color = [r, g, b, int(255 * alpha)]
-        # 윤곽선은 약간 어둡게
-        contour_color = [max(0, r-50), max(0, g-50), max(0, b-50), 255]
+        # 윤곽선은 더 밝고 두껍게
+        contour_color = [min(255, r+50), min(255, g+50), min(255, b+50), 255]
     else:
         # 기본 색상 (하위 호환성)
         if color == 'green':
             fill_color = [0, 255, 0, int(255 * alpha)]
-            contour_color = [0, 200, 0, 255]
+            contour_color = [0, 255, 0, 255]
         elif color == 'red':
             fill_color = [255, 0, 0, int(255 * alpha)]
-            contour_color = [200, 0, 0, 255]
+            contour_color = [255, 0, 0, 255]
         elif color == 'yellow':
             fill_color = [255, 255, 0, int(255 * alpha)]
-            contour_color = [200, 200, 0, 255]
+            contour_color = [255, 255, 0, 255]
         elif color == 'cyan':
             fill_color = [0, 255, 255, int(255 * alpha)]
-            contour_color = [0, 200, 200, 255]
+            contour_color = [0, 255, 255, 255]
         else:
             fill_color = [255, 255, 255, int(255 * alpha)]
-            contour_color = [200, 200, 200, 255]
+            contour_color = [255, 255, 255, 255]
     
-    # 채우기
-    overlay[mask_bool, :] = fill_color
-    
-    # 윤곽선
-    overlay[contour, :] = contour_color
+    # 윤곽선만 표시할지, 채우기도 할지 결정
+    if outline_only:
+        # 윤곽선만 표시
+        overlay[contour, :] = contour_color
+    else:
+        # 채우기
+        overlay[mask_bool, :] = fill_color
+        # 윤곽선
+        overlay[contour, :] = contour_color
     
     # PNG로 변환
     img = Image.fromarray(overlay, mode='RGBA')
@@ -301,6 +306,7 @@ def generate_html_viewer(dicom_dir, metrics_file, output_dir):
         for k, v in masks.items():
             if v is not None:
                 print(f"    {k}: shape={v.shape}")
+    
     
     # DICOM 시리즈 수집
     print("Collecting DICOM series...")
@@ -829,6 +835,28 @@ def generate_html_viewer(dicom_dir, metrics_file, output_dir):
                     <div class="metric-card">
                         <h3>Mismatch Ratio</h3>
                         <div class="value">{metrics.get('mismatch_ratio', 0):.2f}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h2>🧠 Venous Transit (PVT)</h2>
+                <div class="metrics">
+                    <div class="metric-card" style="background: {'#ffebee' if metrics.get('pvt_status') == 'PVT+' else '#e8f5e9'};">
+                        <h3>Venous Transit Status</h3>
+                        <div class="value" style="color: {'#c62828' if metrics.get('pvt_status') == 'PVT+' else '#2e7d32'};">{metrics.get('pvt_status', 'N/A')}</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 4px;">Threshold: ≥{metrics.get('pvt_threshold', 10.0):.1f}s</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 2px;">{metrics.get('pvt_interpretation', '')}</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>SSS Tmax</h3>
+                        <div class="value">{metrics.get('sss_tmax_mean', 0):.2f} sec</div>
+                        <div style="font-size: 10px; color: #888; margin-top: 4px;">{'✓ Positive' if metrics.get('sss_positive') else '○ Negative'}</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Torcula Tmax</h3>
+                        <div class="value">{metrics.get('torcula_tmax_mean', 0):.2f} sec</div>
+                        <div style="font-size: 10px; color: #888; margin-top: 4px;">{'✓ Positive' if metrics.get('torcula_positive') else '○ Negative'}</div>
                     </div>
                 </div>
             </div>
