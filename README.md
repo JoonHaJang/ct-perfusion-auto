@@ -1,15 +1,13 @@
-# 🧠 NeuroFlow: CT Perfusion Auto-Analyzer
+# 🧠 NeuroFlow: CT Perfusion Auto-Analysis (Open Source)
 
-**Siemens CT Perfusion DICOM 자동 분석 및 시각화 도구**
+**파이썬 기반 자동 CT Perfusion 분석 GUI 도구**
 
-뇌졸중 환자의 CT Perfusion 데이터를 자동으로 분석하고, 임상 의사 결정에 필요한 핵심 지표를 계산하며, 직관적인 웹 뷰어를 생성하는 올인원 솔루션입니다.
+DICOM 폴더를 선택하면 자동으로 주요 perfusion 지표와 인터랙티브 웹 뷰어를 생성합니다.
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![PyQt5](https://img.shields.io/badge/GUI-PyQt5-green.svg)](https://pypi.org/project/PyQt5/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Windows](https://img.shields.io/badge/Platform-Windows%20%7C%20Mac-lightgrey.svg)](https://github.com/HyukJang1/ct-perfusion-auto/releases)
-
-> 📥 **Windows 실행 파일 다운로드**: [Releases](https://github.com/HyukJang1/ct-perfusion-auto/releases) 페이지에서 `NeuroFlow_Windows_v1.0.zip` 다운로드
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Mac-lightgrey.svg)](https://github.com/JoonHaJang/ct-perfusion-auto)
 
 ---
 
@@ -34,84 +32,79 @@
 
 ---
 
-## 🚀 빠른 시작
+## 🚀 Quick Start
 
-### 1️⃣ 설치
-
-#### **필수 요구사항**
-- Python 3.8 이상
-- 5개의 Python 패키지
+### 1. 설치
 
 ```bash
 # 저장소 클론
-git clone https://github.com/yourusername/ct-perfusion-auto.git
+git clone https://github.com/JoonHaJang/ct-perfusion-auto.git
 cd ct-perfusion-auto
 
 # 패키지 설치
 pip install -r requirements.txt
 ```
 
-#### **requirements.txt**
+⚠️ **필수 요구사항**: Python 3.8 이상
+
+**requirements.txt**:
 ```txt
 PyQt5>=5.15.0          # GUI 프레임워크
 pydicom>=2.3.0         # DICOM 파일 읽기
-numpy>=1.21.0          # 수치 계산
+numpy>=1.21.0,<2.0     # 수치 계산
 Pillow>=9.0.0          # 이미지 변환
 scipy>=1.7.0           # 윤곽선 검출
+nibabel>=3.2.0         # NIfTI 파일 저장
 ```
 
----
+### 2. 실행
 
-### 2️⃣ 실행
+#### **Windows 사용자**
 
-#### **방법 A: GUI 실행 (권장)** 🎨
+```bash
+python ct_perfusion_viewer_windows.py
+```
+
+#### **Mac 사용자**
 
 ```bash
 python ct_perfusion_viewer.py
 ```
 
-**GUI 기능:**
-1. 📁 **폴더 선택**: DICOM 폴더 선택
-2. 🚀 **분석 시작**: 버튼 클릭으로 자동 분석
-3. 📊 **결과 확인**: 실시간 진행 상황 및 지표 테이블
-4. 🌐 **웹 뷰어**: 브라우저에서 모든 Perfusion 맵 확인
+#### **GUI 사용 방법**
+1. 📁 "Select Folder" 버튼 클릭 → DICOM 폴더 선택
+2. 🚀 "Start Analysis" 버튼 클릭 → 자동 분석 시작 (약 1-2분)
+3. 📊 분석 결과 테이블에서 지표 확인
+4. 🌐 "View Results" 버튼 클릭 → 웹 뷰어에서 Perfusion 맵 확인
+5. 📈 "View Graph" 버튼 클릭 → TAC 그래프 확인 (있는 경우)
 
-![GUI Screenshot](docs/images/gui_screenshot.png)
+### 3. 출력 결과
 
----
+**저장 위치**: `_internal/analysis_results/[환자명]/`
 
-#### **방법 B: 커맨드라인 실행**
-
-```bash
-# 1. 지표 계산
-python scripts/extract_metrics_from_dicom.py \
-    --dicom_dir "path/to/patient/dicom" \
-    --output_dir "analysis_results" \
-    --patient_name "Patient_001"
-
-# 2. 웹 뷰어 생성
-python scripts/generate_dicom_viewer.py \
-    --dicom_dir "path/to/patient/dicom" \
-    --metrics "analysis_results/perfusion_metrics.json" \
-    --output_dir "analysis_results/viewer"
-
-# 3. 브라우저에서 열기
-open analysis_results/viewer/viewer.html
-```
+- **NIfTI 맵**: `cbf.nii.gz`, `cbv.nii.gz`, `mtt.nii.gz`, `tmax.nii.gz`
+- **마스크**: `masks.npz` (hypoperfusion, core, penumbra)
+- **메트릭**: `perfusion_metrics.json`
+- **웹 뷰어**: `viewer/viewer.html` (인터랙티브 3D 뷰어)
+- **TAC 그래프**: `tac_extracted/penumbra_original_*.png` (있는 경우)
 
 ---
 
 ## 📁 프로젝트 구조
 
-### **핵심 파일 (3개)**
+### **핵심 파일**
 ```
 ct-perfusion-auto/
 │
-├── ct_perfusion_viewer.py              ← 메인 GUI 프로그램 ⭐
+├── ct_perfusion_viewer_windows.py      ← Windows GUI 프로그램 ⭐
+├── ct_perfusion_viewer.py              ← Mac GUI 프로그램 ⭐
+├── requirements.txt                    ← Python 패키지 의존성
 │
 └── scripts/
-    ├── extract_metrics_from_dicom.py   ← Perfusion 지표 계산 ⭐
-    └── generate_dicom_viewer.py        ← HTML 웹 뷰어 생성 ⭐
+    ├── extract_metrics_from_dicom.py   ← Perfusion 지표 계산
+    ├── generate_dicom_viewer.py        ← HTML 웹 뷰어 생성
+    ├── extract_tac_from_penumbra.py    ← TAC 추출
+    └── [기타 분석 스크립트]
 ```
 
 ### **전체 구조**
@@ -512,9 +505,31 @@ MIT License - 자유롭게 사용, 수정, 배포 가능
 
 ## 👨‍⚕️ 저자 및 연락처
 
-**개발자:** [Your Name]  
-**소속:** [Your Institution]  
-**이메일:** [your.email@example.com]
+**개발자:** HyukJang1, JoonHaJang  
+**소속:** Korean tertiary center  
+**이메일:** parkoct@catholic.ac.kr
+
+## 🖥️ GUI Applications
+
+### 소스코드 기반 실행 (권장)
+
+#### Windows:
+```bash
+git clone https://github.com/JoonHaJang/ct-perfusion-auto.git
+cd ct-perfusion-auto
+pip install -r requirements.txt
+python ct_perfusion_viewer_windows.py
+```
+
+#### Mac:
+```bash
+git clone https://github.com/JoonHaJang/ct-perfusion-auto.git
+cd ct-perfusion-auto
+pip install -r requirements.txt
+python ct_perfusion_viewer.py
+```
+
+⚠️ **중요**: PC환경에 Python 3.8 이상이 설치되어 있어야 합니다
 
 ---
 
